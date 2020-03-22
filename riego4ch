@@ -1,0 +1,178 @@
+#include <Wire.h> 
+#include "RTClib.h"
+RTC_DS1307 RTC;
+int ch1 = 7;
+int ch3 = 8;
+int ch2 = 6;
+int ch4 = 11; //energiza el tranformados 24V
+
+const int ledPin =  12;      // the number of the LED pin
+
+// Variables will change:
+int ledState = LOW;             // ledState used to set the LED
+long previousMillis = 0;        // will store last time LED was updated
+
+// the follow variables is a long because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+long interval = 1000;           // interval at which to blink (milliseconds)
+
+void setup () {
+Wire.begin(); // Inicia el puerto I2C
+RTC.begin(); // Inicia la comunicación con el RTC
+RTC.adjust(DateTime(__DATE__, __TIME__)); // Establece la fecha y hora (Comentar una vez establecida la hora)
+Serial.begin(9600); // Establece la velocidad de datos del puerto serie
+pinMode (ch1, OUTPUT);
+pinMode (ch3, OUTPUT);
+pinMode (ch2, OUTPUT);
+pinMode (ch4, OUTPUT);
+pinMode (10, INPUT_PULLUP);
+pinMode (9, INPUT_PULLUP);
+pinMode(ledPin, OUTPUT);
+
+digitalWrite (ch4, HIGH);
+ delay (250);
+digitalWrite (ch4, LOW);
+delay (100); 
+ digitalWrite (ch3, HIGH);
+ delay (250);
+digitalWrite (ch2, HIGH);
+ delay (250);
+digitalWrite (ch1, HIGH);
+ delay (250);
+digitalWrite (ch3, LOW);
+digitalWrite (ch2, LOW);
+digitalWrite (ch1, LOW);
+
+}
+void loop(){
+  
+  unsigned long currentMillis = millis();
+ 
+  if(currentMillis - previousMillis > interval) {
+    // save the last time you blinked the LED 
+    previousMillis = currentMillis;   
+
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == LOW)
+      ledState = HIGH;
+    else
+      ledState = LOW;
+
+    // set the LED with the ledState of the variable:
+    digitalWrite(ledPin, ledState);
+  }
+  
+  
+  
+  
+  
+DateTime now = RTC.now(); // Obtiene la fecha y hora del RTC
+   
+Serial.print(now.year(), DEC); // Año
+Serial.print('/');
+Serial.print(now.month(), DEC); // Mes
+Serial.print('/');
+Serial.print(now.day(), DEC); // Dia
+Serial.print(' ');
+Serial.print(now.hour(), DEC); // Horas
+Serial.print(':');
+Serial.print(now.minute(), DEC); // Minutos
+Serial.print(':');
+Serial.print(now.second(), DEC); // Segundos
+Serial.println();
+delay(100); // La información se actualiza cada 1 seg.
+
+int reset = digitalRead(10);
+int test =digitalRead(9);
+
+
+if (reset == LOW) // apaga todos los canales por el tiempo final
+// es la suma de todos los canales abiertos
+
+{ digitalWrite (ch1, LOW);
+ digitalWrite (ch2, LOW);
+ digitalWrite (ch3, LOW);
+ digitalWrite (ch4, LOW);
+ delay (150000);
+
+
+}
+
+
+if (test == LOW) // habilita secuencialmente cada uno de los canales por 3 minutos
+
+{ 
+  
+  digitalWrite (ch1, LOW);
+  digitalWrite (ch3, LOW);
+  digitalWrite (ch2, LOW);
+  digitalWrite (ch1, HIGH);
+  digitalWrite (ch4, HIGH);
+delay (150000);
+  digitalWrite (ch1, LOW);
+  digitalWrite (ch2, HIGH);
+  digitalWrite (ch4, HIGH);
+  delay (50000);
+  digitalWrite (ch2, LOW);
+  digitalWrite (ch3, HIGH);
+  digitalWrite (ch4, HIGH);
+  delay (50000);
+  digitalWrite (ch3,LOW);
+  digitalWrite (ch4, LOW);
+}
+
+if (now.hour() < 3) //excluyo horario antes
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2, LOW);
+  digitalWrite(ch3, LOW);
+  digitalWrite(ch4, LOW);
+  
+}
+
+else if (now.minute() < 7) //CH1
+{ digitalWrite (ch1, HIGH);
+  digitalWrite (ch2,LOW);
+  digitalWrite (ch3,LOW);
+  digitalWrite (ch4, HIGH);
+}
+
+else if (now.minute() >= 7) //CH2
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2,HIGH);
+  digitalWrite(ch3,LOW);
+  digitalWrite (ch4, HIGH);
+}
+
+if (now.hour() < 3) //excluyo horario antes
+{ digitalWrite(3, LOW);
+    
+}
+
+else if (now.minute() >= 8) //CH3
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2,LOW);
+  digitalWrite(ch3,HIGH);
+  digitalWrite (ch4, HIGH);
+}
+
+if (now.minute() >= 9) //minutos final
+{ digitalWrite(ch1,LOW);
+  digitalWrite(ch2,LOW);
+  digitalWrite(ch3,LOW);
+  digitalWrite (ch4,LOW);
+}
+
+
+if (now.hour() >= 4) //excluyo horario futuro
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2, LOW);
+  digitalWrite(ch3, LOW);
+  digitalWrite(ch4, LOW);
+}
+
+
+
+
+
+
+}

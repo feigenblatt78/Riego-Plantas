@@ -14,7 +14,7 @@ long previousMillis = 0;        // will store last time LED was updated
 
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
-long interval = 1000;           // interval at which to blink (milliseconds)
+long interval = 1500;           // interval at which to blink (milliseconds)
 
 void setup () {
 Wire.begin(); // Inicia el puerto I2C
@@ -99,7 +99,7 @@ if (reset == LOW) // apaga todos los canales por el tiempo final
 }
 
 
-if (test == LOW) // habilita secuencialmente cada uno de los canales por 3 minutos
+if (test == LOW) // habilita secuencialmente cada uno de los canales por el tiempo definido
 
 { 
   
@@ -112,11 +112,11 @@ delay (150000);
   digitalWrite (ch1, LOW);
   digitalWrite (ch2, HIGH);
   digitalWrite (ch4, HIGH);
-  delay (50000);
+  delay (60000);
   digitalWrite (ch2, LOW);
   digitalWrite (ch3, HIGH);
   digitalWrite (ch4, HIGH);
-  delay (50000);
+  delay (60000);
   digitalWrite (ch3,LOW);
   digitalWrite (ch4, LOW);
 }
@@ -129,33 +129,44 @@ if (now.hour() < 3) //excluyo horario antes
   
 }
 
-else if (now.minute() < 7) //CH1
+else if (now.minute() == 25) //CH1 Minuto Inicio
 { digitalWrite (ch1, HIGH);
   digitalWrite (ch2,LOW);
   digitalWrite (ch3,LOW);
   digitalWrite (ch4, HIGH);
 }
 
-else if (now.minute() >= 7) //CH2
+else if (now.minute() == 32) //CH1 Minuto Final
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2,LOW);
+  digitalWrite(ch3,LOW);
+  digitalWrite (ch4, LOW);
+}
+
+
+else if (now.minute() == 34) //CH2 Minuto Inicio
 { digitalWrite(ch1, LOW);
   digitalWrite(ch2,HIGH);
   digitalWrite(ch3,LOW);
   digitalWrite (ch4, HIGH);
 }
 
-if (now.hour() < 3) //excluyo horario antes
-{ digitalWrite(3, LOW);
-    
+else if (now.minute() == 39) //CH 2 Minuto Final
+{ digitalWrite(ch1, LOW);
+  digitalWrite(ch2,LOW);
+  digitalWrite(ch3,LOW);
+  digitalWrite (ch4, LOW);
 }
 
-else if (now.minute() >= 8) //CH3
+
+else if (now.minute() == 40) //CH3 Minuto Inicio
 { digitalWrite(ch1, LOW);
   digitalWrite(ch2,LOW);
   digitalWrite(ch3,HIGH);
   digitalWrite (ch4, HIGH);
 }
 
-if (now.minute() >= 9) //minutos final
+if (now.minute() >= 45) //CH 3 Minuto Final
 { digitalWrite(ch1,LOW);
   digitalWrite(ch2,LOW);
   digitalWrite(ch3,LOW);
@@ -170,9 +181,10 @@ if (now.hour() >= 4) //excluyo horario futuro
   digitalWrite(ch4, LOW);
 }
 
-
-
-
-
-
 }
+
+
+
+
+
+
